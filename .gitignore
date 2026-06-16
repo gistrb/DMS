@@ -1,0 +1,29 @@
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+
+# Node
+**/node_modules/
+**/dist/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# App data
+**/Uploads/*
+!**/Uploads/.gitkeep
+
+# Docker
+.dockerignore
+
+# Logs
+*.log
