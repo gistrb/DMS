@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = (window as any).__BACKEND_URL__ || '/api';
+const backendUrl = (window as any).__BACKEND_URL__;
+const API_BASE_URL = backendUrl ? `${backendUrl}/api` : '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
