@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\DMS.Backend.props" />
-</Project>

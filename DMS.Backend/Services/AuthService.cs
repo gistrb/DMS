@@ -41,6 +41,12 @@ public class AuthService : IAuthService
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
 
+        user = await _db.Users
+            .Include(u => u.Role)
+                .ThenInclude(r => r.RolePermissions)
+                    .ThenInclude(rp => rp.Permission)
+            .FirstAsync(u => u.Id == user.Id);
+
         return await BuildResponseAsync(user);
     }
 

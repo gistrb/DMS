@@ -17,7 +17,7 @@ builder.Services.AddSwaggerGen();
 
 var rawConnectionString = builder.Configuration["DATABASE_URL"]
     ?? builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Host=localhost;Port=5432;Database=dmsdb;Username=dms;Password=dms_pass";
+    ?? "Host=localhost;Port=5433;Database=dmsdb;Username=dms;Password=dms_pass";
 var connectionString = ParseConnectionString(rawConnectionString);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -96,7 +96,8 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    db.Database.EnsureCreated();
+    if (!db.Roles.Any()) DbInitializer.Seed(db);
 }
 
 app.Run();
