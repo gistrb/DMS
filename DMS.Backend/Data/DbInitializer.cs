@@ -59,4 +59,23 @@ public static class DbInitializer
 
         db.SaveChanges();
     }
+
+    public static void EnsureAdmin(AppDbContext db)
+    {
+        if (!db.Users.Any(u => u.Username == "admin"))
+        {
+            var adminUser = new User
+            {
+                Username = "admin",
+                Email = "admin@dms.local",
+                FullName = "System Administrator",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                RoleId = 1,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+            };
+            db.Users.Add(adminUser);
+            db.SaveChanges();
+        }
+    }
 }

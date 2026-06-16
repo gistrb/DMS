@@ -99,6 +99,7 @@ using (var scope = app.Services.CreateScope())
     db.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"__EFMigrationsHistory\" CASCADE");
     db.Database.EnsureCreated();
     if (!db.Roles.Any()) DbInitializer.Seed(db);
+    DbInitializer.EnsureAdmin(db);
 }
 
 app.Run();
