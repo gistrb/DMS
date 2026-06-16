@@ -96,6 +96,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS \"__EFMigrationsHistory\" CASCADE");
     db.Database.EnsureCreated();
     if (!db.Roles.Any()) DbInitializer.Seed(db);
 }
