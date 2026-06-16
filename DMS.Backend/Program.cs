@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,11 +13,27 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration["DATABASE_URL"]
+var rawConnectionString = builder.Configuration["DATABASE_URL"]
     ?? builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Host=localhost;Port=5432;Database=dmsdb;Username=dms;Password=dms_pass";
+var connectionString = ParseConnectionString(rawConnectionString);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+static string ParseConnectionString(string input)
+{
+    if (!input.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase) &&
+        !input.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase))
+        return input;
+
+    var uri = new Uri(input);
+    var host = uri.Host;
+    var port = uri.IsDefaultPort ? "5432" : uri.Port.ToString();
+    var db = uri.AbsolutePath.TrimStart('/').Split('?')[0];
+    var user = uri.UserInfo.Split(':').ElementAtOrDefault(0) ?? "";
+    var pass = uri.UserInfo.Split(':').ElementAtOrDefault(1) ?? "";
+    return $"Host={host};Port={port};Database={db};Username={user};Password={pass};SSL Mode=Prefer;Trust Server Certificate=true";
+}
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()!;
